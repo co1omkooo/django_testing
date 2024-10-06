@@ -1,5 +1,3 @@
-from collections import namedtuple
-
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -9,34 +7,16 @@ from notes.models import Note
 USER = get_user_model()
 SLUG = 'note-slug'
 
-URL_NAME = namedtuple(
-    'URL_NAME',
-    [
-        'home',
-        'add',
-        'list',
-        'detail',
-        'edit',
-        'delete',
-        'success',
-        'login',
-        'logout',
-        'signup',
-    ],
-)
-
-URL = URL_NAME(
-    reverse('notes:home'),
-    reverse('notes:add'),
-    reverse('notes:list'),
-    reverse('notes:detail', args=(SLUG,)),
-    reverse('notes:edit', args=(SLUG,)),
-    reverse('notes:delete', args=(SLUG,)),
-    reverse('notes:success'),
-    reverse('users:login'),
-    reverse('users:logout'),
-    reverse('users:signup'),
-)
+REVERSE_HOME = reverse('notes:home')
+REVERSE_ADD = reverse('notes:add')
+REVERSE_LIST = reverse('notes:list')
+REVERSE_DETAIL = reverse('notes:detail', args=(SLUG,))
+REVERSE_EDIT = reverse('notes:edit', args=(SLUG,))
+REVERSE_DELETE = reverse('notes:delete', args=(SLUG,))
+REVERSE_SUCCESS = reverse('notes:success')
+REVERSE_LOGIN = reverse('users:login')
+REVERSE_LOGOUT = reverse('users:logout')
+REVERSE_SIGNUP = reverse('users:signup')
 
 
 class CoreTestCase(TestCase):
@@ -52,6 +32,11 @@ class CoreTestCase(TestCase):
         cls.note = Note.objects.create(
             title='Заголовок',
             text='Текст заметки',
-            slug='note-slug',
+            slug=SLUG,
             author=cls.author,
         )
+        cls.form_data = {
+            'title': 'Новый заголовок',
+            'text': 'Новый текст',
+            'slug': 'new-slug'
+        }

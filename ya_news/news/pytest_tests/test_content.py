@@ -8,11 +8,10 @@ from news.forms import CommentForm
 pytestmark = pytest.mark.django_db
 
 
-def test_news_count(eleven_news, url_news_home, client):
+def test_news_count(news_list, url_news_home, client):
     """Количество новостей на главной странице — не более 10."""
-    response = client.get(url_news_home)
     assert (
-        len(response.context['object_list'])
+        len(client.get(url_news_home).context['object_list'])
         == settings.NEWS_COUNT_ON_HOME_PAGE
     )
 
@@ -24,12 +23,13 @@ def test_news_order(url_news_home, client):
     Новости отсортированы от самой свежей к самой старой.
     Свежие новости в начале списка.
     """
-    response = client.get(url_news_home)
-    all_dates = [news.date for news in response.context['object_list']]
+    all_dates = [
+        news.date for news in client.get(url_news_home).context['object_list']
+    ]
     assert all_dates == sorted(all_dates, reverse=True)
 
 
-def test_comments_order(news_with_comments, url_news_detail, client, news):
+def test_comments_order(comments_list, url_news_detail, client, news):
     """
     Сортировка.
 

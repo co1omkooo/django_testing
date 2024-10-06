@@ -1,49 +1,12 @@
-import random
 from datetime import datetime, timedelta
-from collections import namedtuple
 
 import pytest
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from django.test.client import Client
-from pytest_lazyfixture import lazy_fixture
 
-from news.forms import BAD_WORDS
 from news.models import Comment, News
-
-PK = 1
-ADMIN = lazy_fixture('admin_client')
-AUTHOR = lazy_fixture('author_client')
-CLIENT = lazy_fixture('client')
-
-URL_NAME = namedtuple(
-    'URL_NAME',
-    [
-        'home',
-        'detail',
-        'edit',
-        'delete',
-        'login',
-        'logout',
-        'signup',
-    ],
-)
-
-URL = URL_NAME(
-    reverse('news:home'),
-    reverse('news:detail', args=(PK,)),
-    reverse('news:edit', args=(PK,)),
-    reverse('news:delete', args=(PK,)),
-    reverse('users:login'),
-    reverse('users:logout'),
-    reverse('users:signup'),
-)
-
-
-@pytest.fixture
-def bad_words_data():
-    return {'text': f'Какой-то текст, {BAD_WORDS}, еще текст'}
 
 
 @pytest.fixture
@@ -67,14 +30,14 @@ def news():
 
 
 @pytest.fixture
-def eleven_news():
+def news_list():
     today = datetime.today()
-    all_news = [News(
-        title=f'Новость {index}',
-        text='Просто текст.',
-        date=today - timedelta(days=index),
-    ) for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)]
-    News.objects.bulk_create(all_news)
+    News.objects.bulk_create(
+        [News(
+            title=f'Новость {index}',
+            text='Просто текст.',
+            date=today - timedelta(days=index),
+        ) for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)])
 
 
 @pytest.fixture
@@ -87,18 +50,15 @@ def comment(news, author):
 
 
 @pytest.fixture
-def news_with_comments(news, author):
-    start_date = timezone.now()
-    end_date = start_date + timedelta(days=10)
+def comments_list(news, author):
+    now = timezone.now()
     for index in range(10):
         comment = Comment.objects.create(
             news=news,
             author=author,
-            text=f'Tекст {index}',
+            text=f'Текст {index}',
         )
-        comment.created = (
-            start_date + (end_date - start_date) * random.random()
-        )
+        comment.created = now + timedelta(days=index)
         comment.save()
 
 
@@ -135,3 +95,13 @@ def url_user_logout():
 @pytest.fixture
 def url_user_signup():
     return reverse('users:signup')
+
+
+@pytest.fixture
+def redirect_detail(url_news_detail):
+    return f'{url_news_detail}#comments'
+
+
+@pytest.fixture
+def redirect_login(url_user_login):
+    return f'{url_user_login}?next='
