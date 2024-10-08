@@ -4,19 +4,23 @@ from http import HTTPStatus
 
 from notes.tests.core import (
     CoreTestCase,
-    REVERSE_HOME,
-    REVERSE_ADD,
-    REVERSE_DELETE,
-    REVERSE_DETAIL,
-    REVERSE_EDIT,
-    REVERSE_LIST,
-    REVERSE_LOGIN,
-    REVERSE_LOGOUT,
-    REVERSE_SIGNUP,
-    REVERSE_SUCCESS
+    URL_HOME,
+    URL_ADD,
+    URL_DELETE,
+    URL_DETAIL,
+    URL_EDIT,
+    URL_LIST,
+    URL_LOGIN,
+    URL_LOGOUT,
+    URL_SIGNUP,
+    URL_SUCCESS,
+    REDIRECT_ADD,
+    REDIRECT_DELETE,
+    REDIRECT_DETAIL,
+    REDIRECT_EDIT,
+    REDIRECT_LIST,
+    REDIRECT_SUCCESS
 )
-
-REDIRECT_LOGIN = f'{REVERSE_LOGIN}?next={{url}}'
 
 
 class TestRoutes(CoreTestCase):
@@ -25,22 +29,29 @@ class TestRoutes(CoreTestCase):
     def test_pages_availability_for_anonymous_user(self):
         """Проверка доступа к страницам."""
         urls = (
-            (REVERSE_HOME, self.client, HTTPStatus.OK),
-            (REVERSE_LOGIN, self.client, HTTPStatus.OK),
-            (REVERSE_LOGOUT, self.client, HTTPStatus.OK),
-            (REVERSE_SIGNUP, self.client, HTTPStatus.OK),
-            (REVERSE_DETAIL, self.author_logged, HTTPStatus.OK),
-            (REVERSE_EDIT, self.author_logged, HTTPStatus.OK),
-            (REVERSE_DELETE, self.author_logged, HTTPStatus.OK),
-            (REVERSE_ADD, self.user_logged, HTTPStatus.OK),
-            (REVERSE_LIST, self.user_logged, HTTPStatus.OK),
-            (REVERSE_SUCCESS, self.user_logged, HTTPStatus.OK),
-            (REVERSE_DETAIL, self.user_logged, HTTPStatus.NOT_FOUND),
-            (REVERSE_EDIT, self.user_logged, HTTPStatus.NOT_FOUND),
-            (REVERSE_DELETE, self.user_logged, HTTPStatus.NOT_FOUND),
+            (URL_HOME, self.client, HTTPStatus.OK),
+            (URL_LOGIN, self.client, HTTPStatus.OK),
+            (URL_LOGOUT, self.client, HTTPStatus.OK),
+            (URL_SIGNUP, self.client, HTTPStatus.OK),
+            (URL_DETAIL, self.author_logged, HTTPStatus.OK),
+            (URL_EDIT, self.author_logged, HTTPStatus.OK),
+            (URL_DELETE, self.author_logged, HTTPStatus.OK),
+            (URL_ADD, self.user_logged, HTTPStatus.OK),
+            (URL_LIST, self.user_logged, HTTPStatus.OK),
+            (URL_SUCCESS, self.user_logged, HTTPStatus.OK),
+            (URL_DETAIL, self.user_logged, HTTPStatus.NOT_FOUND),
+            (URL_EDIT, self.user_logged, HTTPStatus.NOT_FOUND),
+            (URL_DELETE, self.user_logged, HTTPStatus.NOT_FOUND),
+            (REDIRECT_LIST, self.user_logged, HTTPStatus.OK),
+            (REDIRECT_ADD, self.user_logged, HTTPStatus.OK),
+            (REDIRECT_SUCCESS, self.user_logged, HTTPStatus.OK),
+            (REDIRECT_EDIT, self.user_logged, HTTPStatus.OK),
+            (REDIRECT_DELETE, self.user_logged, HTTPStatus.OK),
+            (REDIRECT_DETAIL, self.user_logged, HTTPStatus.OK),
+
         )
         for url, client, expected_status in urls:
-            with self.subTest(url=url):
+            with self.subTest(url=url, client=client):
                 self.assertEqual(
                     client.get(url).status_code,
                     expected_status,
@@ -49,16 +60,16 @@ class TestRoutes(CoreTestCase):
     def test_redirects(self):
         """Проверка редиректа для неавторизованного пользователя."""
         urls = (
-            REVERSE_LIST,
-            REVERSE_ADD,
-            REVERSE_SUCCESS,
-            REVERSE_DETAIL,
-            REVERSE_EDIT,
-            REVERSE_DELETE,
+            (URL_LIST, REDIRECT_LIST),
+            (URL_ADD, REDIRECT_ADD),
+            (URL_SUCCESS, REDIRECT_SUCCESS),
+            (URL_DETAIL, REDIRECT_DETAIL),
+            (URL_EDIT, REDIRECT_EDIT),
+            (URL_DELETE, REDIRECT_DELETE)
         )
-        for url in urls:
+        for url, redirect in urls:
             with self.subTest(url=url):
                 self.assertRedirects(
                     self.client.get(url),
-                    REDIRECT_LOGIN.format(url=url)
+                    redirect
                 )

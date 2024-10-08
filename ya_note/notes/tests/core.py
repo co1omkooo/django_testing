@@ -7,16 +7,22 @@ from notes.models import Note
 USER = get_user_model()
 SLUG = 'note-slug'
 
-REVERSE_HOME = reverse('notes:home')
-REVERSE_ADD = reverse('notes:add')
-REVERSE_LIST = reverse('notes:list')
-REVERSE_DETAIL = reverse('notes:detail', args=(SLUG,))
-REVERSE_EDIT = reverse('notes:edit', args=(SLUG,))
-REVERSE_DELETE = reverse('notes:delete', args=(SLUG,))
-REVERSE_SUCCESS = reverse('notes:success')
-REVERSE_LOGIN = reverse('users:login')
-REVERSE_LOGOUT = reverse('users:logout')
-REVERSE_SIGNUP = reverse('users:signup')
+URL_HOME = reverse('notes:home')
+URL_ADD = reverse('notes:add')
+URL_LIST = reverse('notes:list')
+URL_DETAIL = reverse('notes:detail', args=(SLUG,))
+URL_EDIT = reverse('notes:edit', args=(SLUG,))
+URL_DELETE = reverse('notes:delete', args=(SLUG,))
+URL_SUCCESS = reverse('notes:success')
+URL_LOGIN = reverse('users:login')
+URL_LOGOUT = reverse('users:logout')
+URL_SIGNUP = reverse('users:signup')
+REDIRECT_ADD = f'{URL_LOGIN}?next={URL_ADD}'
+REDIRECT_LIST = f'{URL_LOGIN}?next={URL_LIST}'
+REDIRECT_SUCCESS = f'{URL_LOGIN}?next={URL_SUCCESS}'
+REDIRECT_DETAIL = f'{URL_LOGIN}?next={URL_DETAIL}'
+REDIRECT_EDIT = f'{URL_LOGIN}?next={URL_EDIT}'
+REDIRECT_DELETE = f'{URL_LOGIN}?next={URL_DELETE}'
 
 
 class CoreTestCase(TestCase):

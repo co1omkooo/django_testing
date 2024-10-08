@@ -33,11 +33,11 @@ def news():
 def news_list():
     today = datetime.today()
     News.objects.bulk_create(
-        [News(
+        News(
             title=f'Новость {index}',
             text='Просто текст.',
             date=today - timedelta(days=index),
-        ) for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1)])
+        ) for index in range(settings.NEWS_COUNT_ON_HOME_PAGE + 1))
 
 
 @pytest.fixture
@@ -103,5 +103,10 @@ def redirect_detail(url_news_detail):
 
 
 @pytest.fixture
-def redirect_login(url_user_login):
-    return f'{url_user_login}?next='
+def redirect_delete(url_user_login, url_comment_delete):
+    return f'{url_user_login}?next={url_comment_delete}'
+
+
+@pytest.fixture
+def redirect_edit(url_user_login, url_comment_edit):
+    return f'{url_user_login}?next={url_comment_edit}'
