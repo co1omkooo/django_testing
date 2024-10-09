@@ -30,6 +30,7 @@ def test_user_can_create_comment(
     Comment.objects.all().delete()
     response = author_client.post(url_news_detail, data=form_data)
     assertRedirects(response, redirect_detail)
+    assert Comment.objects.count() == 1
     new_comment = Comment.objects.get()
     assert new_comment.text == form_data['text']
     assert new_comment.author == author
@@ -74,25 +75,26 @@ def test_user_cant_delete_comment_of_another_user(
     """Авторизованный пользователь не может удалять чужие комментарии."""
     response = admin_client.delete(url_comment_delete)
     assert response.status_code == HTTPStatus.NOT_FOUND
+    assert Comment.objects.count() == 1
     comment_from_db = Comment.objects.get(id=comment.id)
     assert comment_from_db.text == comment.text
+    assert comment_from_db.news == comment.news
+    assert comment_from_db.author == comment.author
 
 
 def test_author_can_edit_comment(
     url_comment_edit,
     redirect_detail,
     comment,
-    author_client,
-    author,
-    news
+    author_client
 ):
     """Авторизованный пользователь может редактировать свои комментарии."""
     response = author_client.post(url_comment_edit, data=form_data)
     assertRedirects(response, redirect_detail)
     comment_from_db = Comment.objects.get(id=comment.id)
     assert comment_from_db.text == form_data['text']
-    assert comment_from_db.author == author
-    assert comment_from_db.news == news
+    assert comment_from_db.author == comment.author
+    assert comment_from_db.news == comment.news
 
 
 def test_user_cant_edit_comment_of_another_user(
@@ -104,4 +106,6 @@ def test_user_cant_edit_comment_of_another_user(
     response = admin_client.post(url_comment_edit, data=form_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
     comment_from_db = Comment.objects.get(id=comment.id)
-    assert comment_from_db.text, comment.text
+    assert comment_from_db.text == comment.text
+    assert comment_from_db.author == comment.author
+    assert comment_from_db.news == comment.news

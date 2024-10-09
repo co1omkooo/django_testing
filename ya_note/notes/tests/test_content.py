@@ -22,11 +22,11 @@ class TestContent(CoreTestCase):
         """
         response = self.author_logged.get(URL_LIST)
         self.assertIn(self.note, response.context['object_list'])
-        note_from_db = Note.objects.get(id=self.note.id)
-        self.assertEqual(self.note.title, note_from_db.title)
-        self.assertEqual(self.note.text, note_from_db.text)
-        self.assertEqual(self.note.slug, note_from_db.slug)
-        self.assertEqual(self.note.author, note_from_db.author)
+        note = Note.objects.get(id=self.note.id)
+        self.assertEqual(self.note.title, note.title)
+        self.assertEqual(self.note.text, note.text)
+        self.assertEqual(self.note.slug, note.slug)
+        self.assertEqual(self.note.author, note.author)
 
     def test_notes_do_not_get_to_another_user(self):
         """
@@ -37,11 +37,6 @@ class TestContent(CoreTestCase):
         """
         response = self.user_logged.get(URL_LIST)
         self.assertNotIn(self.note, response.context['object_list'])
-        note_from_db = Note.objects.get(id=self.note.id)
-        self.assertEqual(self.note.title, note_from_db.title)
-        self.assertEqual(self.note.text, note_from_db.text)
-        self.assertEqual(self.note.slug, note_from_db.slug)
-        self.assertEqual(self.note.author, note_from_db.author)
 
     def test_pages_contains_form(self):
         """На страницы создания и редактирования заметки передаются формы."""

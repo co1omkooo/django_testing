@@ -40,8 +40,6 @@ class TestCommentCreation(CoreTestCase):
         """Анонимный пользователь не может создать заметку."""
         response = self.client.post(URL_ADD, data=self.form_data)
         self.assertRedirects(response, REDIRECT_ADD)
-        new_note = Note.objects.get(id=self.note.id)
-        self.assertEqual(new_note.text, self.note.text)
 
     def test_not_unique_slug(self):
         """Невозможно создать две заметки с одинаковым slug."""
@@ -56,8 +54,6 @@ class TestCommentCreation(CoreTestCase):
             'slug',
             errors=(self.note.slug + WARNING)
         )
-        new_note = Note.objects.get(id=self.note.id)
-        self.assertEqual(new_note.text, self.note.text)
 
     def test_empty_slug(self):
         """
@@ -109,19 +105,15 @@ class TestCommentCreation(CoreTestCase):
 
     def test_author_can_delete_note(self):
         """Пользователь может удалять свои заметки."""
-        note_count = Note.objects.count()
-        self.assertEqual(note_count, 1)
         response = self.author_logged.post(URL_DELETE)
         self.assertRedirects(response, URL_SUCCESS)
-        note_exists = Note.objects.exists()
-        self.assertEqual(note_exists, False)
+        self.assertEqual(Note.objects.filter(id=self.note.id).exists(), False)
 
     def test_other_user_cant_delete_note(self):
         """Пользователь не может удалять чужие заметки."""
         response = self.user_logged.post(URL_DELETE)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        note_exists = Note.objects.exists()
-        self.assertEqual(note_exists, True)
+        self.assertEqual(Note.objects.filter(id=self.note.id).exists(), True)
         note_from_db = Note.objects.get(id=self.note.id)
         self.assertEqual(self.note.title, note_from_db.title)
         self.assertEqual(self.note.text, note_from_db.text)

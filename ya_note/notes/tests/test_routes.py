@@ -42,13 +42,12 @@ class TestRoutes(CoreTestCase):
             (URL_DETAIL, self.user_logged, HTTPStatus.NOT_FOUND),
             (URL_EDIT, self.user_logged, HTTPStatus.NOT_FOUND),
             (URL_DELETE, self.user_logged, HTTPStatus.NOT_FOUND),
-            (REDIRECT_LIST, self.user_logged, HTTPStatus.OK),
-            (REDIRECT_ADD, self.user_logged, HTTPStatus.OK),
-            (REDIRECT_SUCCESS, self.user_logged, HTTPStatus.OK),
-            (REDIRECT_EDIT, self.user_logged, HTTPStatus.OK),
-            (REDIRECT_DELETE, self.user_logged, HTTPStatus.OK),
-            (REDIRECT_DETAIL, self.user_logged, HTTPStatus.OK),
-
+            (URL_LIST, self.client, HTTPStatus.FOUND),
+            (URL_ADD, self.client, HTTPStatus.FOUND),
+            (URL_SUCCESS, self.client, HTTPStatus.FOUND),
+            (URL_DETAIL, self.client, HTTPStatus.FOUND),
+            (URL_EDIT, self.client, HTTPStatus.FOUND),
+            (URL_DELETE, self.client, HTTPStatus.FOUND),
         )
         for url, client, expected_status in urls:
             with self.subTest(url=url, client=client):

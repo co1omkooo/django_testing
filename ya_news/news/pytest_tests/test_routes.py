@@ -35,9 +35,8 @@ pytestmark = pytest.mark.django_db
         (DELETE_URL, AUTHOR, HTTPStatus.OK),
         (EDIT_URL, ADMIN, HTTPStatus.NOT_FOUND),
         (DELETE_URL, ADMIN, HTTPStatus.NOT_FOUND),
-        (REDIRECT_DELETE, AUTHOR, HTTPStatus.OK),
-        (REDIRECT_DETAIL, AUTHOR, HTTPStatus.OK),
-        (REDIRECT_EDIT, AUTHOR, HTTPStatus.OK)
+        (DELETE_URL, CLIENT, HTTPStatus.FOUND),
+        (EDIT_URL, CLIENT, HTTPStatus.FOUND)
 
     ),
 )
@@ -48,15 +47,18 @@ def test_pages_availability_for_anonymous_user(
     assert parametrized_client.get(url).status_code == expected_status
 
 
+@pytest.mark.parametrize(
+    'url, redirect',
+    (
+        (DELETE_URL, REDIRECT_DELETE),
+        (EDIT_URL, REDIRECT_EDIT)
+    )
+)
 def test_redirect_for_anonymous_client(
     client,
     comment,
-    url_comment_delete,
-    url_comment_edit,
-    redirect_delete,
-    redirect_edit
-
+    url,
+    redirect
 ):
     """Проверка редиректа для анонимного пользователя."""
-    assertRedirects(client.get(url_comment_delete), redirect_delete)
-    assertRedirects(client.get(url_comment_edit), redirect_edit)
+    assertRedirects(client.get(url), redirect)
