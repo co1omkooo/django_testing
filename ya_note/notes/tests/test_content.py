@@ -1,7 +1,6 @@
 """Тест контента."""
 
 from notes.forms import NoteForm
-from notes.models import Note
 from notes.tests.core import (
     CoreTestCase,
     URL_LIST,
@@ -22,11 +21,11 @@ class TestContent(CoreTestCase):
         """
         response = self.author_logged.get(URL_LIST)
         self.assertIn(self.note, response.context['object_list'])
-        note = Note.objects.get(id=self.note.id)
-        self.assertEqual(self.note.title, note.title)
-        self.assertEqual(self.note.text, note.text)
-        self.assertEqual(self.note.slug, note.slug)
-        self.assertEqual(self.note.author, note.author)
+        object_list = response.context['object_list'].get(id=self.note.id)
+        self.assertEqual(self.note.title, object_list.title)
+        self.assertEqual(self.note.text, object_list.text)
+        self.assertEqual(self.note.slug, object_list.slug)
+        self.assertEqual(self.note.author, object_list.author)
 
     def test_notes_do_not_get_to_another_user(self):
         """
