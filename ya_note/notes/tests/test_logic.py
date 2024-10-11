@@ -38,14 +38,15 @@ class TestCommentCreation(CoreTestCase):
 
     def test_anonymous_user_cant_create_note(self):
         """Анонимный пользователь не может создать заметку."""
-        note_old = Note.objects.count()
+        note_before = Note.objects.all()
         response = self.client.post(URL_ADD, data=self.form_data)
         self.assertRedirects(response, REDIRECT_ADD)
-        self.assertEqual(Note.objects.count(), note_old)
+        note_after = Note.objects.all()
+        self.assertEqual(set(note_before), set(note_after))
 
     def test_not_unique_slug(self):
         """Невозможно создать две заметки с одинаковым slug."""
-        note_old = Note.objects.count()
+        note_before = Note.objects.all()
         self.form_data['slug'] = self.note.slug
         response = self.author_logged.post(
             URL_ADD,
@@ -57,7 +58,8 @@ class TestCommentCreation(CoreTestCase):
             'slug',
             errors=(self.note.slug + WARNING)
         )
-        self.assertEqual(Note.objects.count(), note_old)
+        note_after = Note.objects.all()
+        self.assertEqual(set(note_before), set(note_after))
 
     def test_empty_slug(self):
         """
